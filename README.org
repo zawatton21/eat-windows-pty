@@ -5,6 +5,8 @@
 Make =M-x eat= work on native Windows Emacs.
 #+end_quote
 
+[[https://github.com/sponsors/zawatton21][https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink?style=flat-square]]
+
 * What is this?
 
 Native Windows Emacs has no PTY support. Upstream [[https://github.com/akib/emacs-eat][eat]] wraps commands
