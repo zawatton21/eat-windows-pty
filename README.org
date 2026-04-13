@@ -30,9 +30,46 @@ Emacs (pipe-mode subprocess)
 
 * Installation
 
+** async-installer
+
+#+begin_src emacs-lisp
+(async-installer-github-add "https://github.com/zawatton21/eat-windows-pty.git"
+                            :branch "master"
+                            :main "eat-windows-pty.el")
+#+end_src
+
+** straight.el
+
 #+begin_src emacs-lisp
 (straight-use-package
  '(eat-windows-pty :type git :host github :repo "zawatton21/eat-windows-pty"))
+#+end_src
+
+** elpaca
+
+#+begin_src emacs-lisp
+(elpaca (eat-windows-pty :host github :repo "zawatton21/eat-windows-pty"))
+#+end_src
+
+** use-package (with straight or elpaca)
+
+#+begin_src emacs-lisp
+;; with straight
+(use-package eat-windows-pty
+  :straight (eat-windows-pty :type git :host github :repo "zawatton21/eat-windows-pty"))
+
+;; with elpaca
+(use-package eat-windows-pty
+  :ensure (:host github :repo "zawatton21/eat-windows-pty"))
+#+end_src
+
+** Manual
+
+Clone this repository and add it to your =load-path=:
+
+#+begin_src emacs-lisp
+(add-to-list 'load-path "/path/to/eat-windows-pty")
+(require 'eat-windows-pty)
 #+end_src
 
 * Usage
