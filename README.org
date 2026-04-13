@@ -35,7 +35,7 @@ Emacs (pipe-mode subprocess)
 [[https://github.com/zawatton21/async-installer][async-installer]] — a small, non-blocking package manager for Emacs. Pure Elisp syntax — no macro DSL required.
 
 #+begin_src emacs-lisp
-(async-installer-github-add "https://github.com/zawatton21/eat-windows-pty.git"
+(async-installer-git-add "https://github.com/zawatton21/eat-windows-pty.git"
                             :branch "master"
                             :main "eat-windows-pty.el")
 #+end_src
