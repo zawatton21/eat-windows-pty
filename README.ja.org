@@ -7,7 +7,7 @@
 ネイティブ Windows Emacs で =M-x eat= を動かす。
 #+end_quote
 
-#+html: <a href="https://github.com/sponsors/zawatton21"><img src="https://img.shields.io/badge/Sponsor_%E2%9D%A4_Support_this_project-pink?style=for-the-badge" alt="Sponsor"></a>
+#+html: <a href="https://github.com/sponsors/zawatton"><img src="https://img.shields.io/badge/Sponsor_%E2%9D%A4_Support_this_project-pink?style=for-the-badge" alt="Sponsor"></a>
 
 * これは何？
 
@@ -36,10 +36,10 @@ Emacs (pipe-mode サブプロセス)
 
 ** async-installer
 
-[[https://github.com/zawatton21/async-installer][async-installer]] — Emacs 向けの小型ノンブロッキングパッケージマネージャ。Pure Elisp 構文で、マクロ DSL は不要です。
+[[https://github.com/zawatton/async-installer][async-installer]] — Emacs 向けの小型ノンブロッキングパッケージマネージャ。Pure Elisp 構文で、マクロ DSL は不要です。
 
 #+begin_src emacs-lisp
-(async-installer-git-add "https://github.com/zawatton21/eat-windows-pty.git"
+(async-installer-git-add "https://github.com/zawatton/eat-windows-pty.git"
                             :branch "master"
                             :main "eat-windows-pty.el")
 #+end_src
@@ -48,13 +48,13 @@ Emacs (pipe-mode サブプロセス)
 
 #+begin_src emacs-lisp
 (straight-use-package
- '(eat-windows-pty :type git :host github :repo "zawatton21/eat-windows-pty"))
+ '(eat-windows-pty :type git :host github :repo "zawatton/eat-windows-pty"))
 #+end_src
 
 ** elpaca
 
 #+begin_src emacs-lisp
-(elpaca (eat-windows-pty :host github :repo "zawatton21/eat-windows-pty"))
+(elpaca (eat-windows-pty :host github :repo "zawatton/eat-windows-pty"))
 #+end_src
 
 ** use-package（straight または elpaca と組み合わせる場合）
@@ -62,11 +62,11 @@ Emacs (pipe-mode サブプロセス)
 #+begin_src emacs-lisp
 ;; straight と組み合わせる場合
 (use-package eat-windows-pty
-  :straight (eat-windows-pty :type git :host github :repo "zawatton21/eat-windows-pty"))
+  :straight (eat-windows-pty :type git :host github :repo "zawatton/eat-windows-pty"))
 
 ;; elpaca と組み合わせる場合
 (use-package eat-windows-pty
-  :ensure (:host github :repo "zawatton21/eat-windows-pty"))
+  :ensure (:host github :repo "zawatton/eat-windows-pty"))
 #+end_src
 
 ** 手動インストール

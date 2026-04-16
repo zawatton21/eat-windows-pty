@@ -1,7 +1,7 @@
 ;;; eat-windows-pty.el --- ConPTY support for emacs-eat on native Windows -*- lexical-binding: t; -*-
 
 ;; Author: Fujisawa Electric Management Office
-;; URL: https://github.com/zawatton21/eat-windows-pty
+;; URL: https://github.com/zawatton/eat-windows-pty
 ;; Version: 0.1.0
 ;; Keywords: terminals, processes
 ;; Package-Requires: ((emacs "29.1") (eat "0.9"))

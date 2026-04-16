@@ -7,7 +7,7 @@
 Make =M-x eat= work on native Windows Emacs.
 #+end_quote
 
-#+html: <a href="https://github.com/sponsors/zawatton21"><img src="https://img.shields.io/badge/Sponsor_%E2%9D%A4_Support_this_project-pink?style=for-the-badge" alt="Sponsor"></a>
+#+html: <a href="https://github.com/sponsors/zawatton"><img src="https://img.shields.io/badge/Sponsor_%E2%9D%A4_Support_this_project-pink?style=for-the-badge" alt="Sponsor"></a>
 
 * What is this?
 
@@ -36,10 +36,10 @@ Emacs (pipe-mode subprocess)
 
 ** async-installer
 
-[[https://github.com/zawatton21/async-installer][async-installer]] — a small, non-blocking package manager for Emacs. Pure Elisp syntax — no macro DSL required.
+[[https://github.com/zawatton/async-installer][async-installer]] — a small, non-blocking package manager for Emacs. Pure Elisp syntax — no macro DSL required.
 
 #+begin_src emacs-lisp
-(async-installer-git-add "https://github.com/zawatton21/eat-windows-pty.git"
+(async-installer-git-add "https://github.com/zawatton/eat-windows-pty.git"
                             :branch "master"
                             :main "eat-windows-pty.el")
 #+end_src
@@ -48,13 +48,13 @@ Emacs (pipe-mode subprocess)
 
 #+begin_src emacs-lisp
 (straight-use-package
- '(eat-windows-pty :type git :host github :repo "zawatton21/eat-windows-pty"))
+ '(eat-windows-pty :type git :host github :repo "zawatton/eat-windows-pty"))
 #+end_src
 
 ** elpaca
 
 #+begin_src emacs-lisp
-(elpaca (eat-windows-pty :host github :repo "zawatton21/eat-windows-pty"))
+(elpaca (eat-windows-pty :host github :repo "zawatton/eat-windows-pty"))
 #+end_src
 
 ** use-package (with straight or elpaca)
@@ -62,11 +62,11 @@ Emacs (pipe-mode subprocess)
 #+begin_src emacs-lisp
 ;; with straight
 (use-package eat-windows-pty
-  :straight (eat-windows-pty :type git :host github :repo "zawatton21/eat-windows-pty"))
+  :straight (eat-windows-pty :type git :host github :repo "zawatton/eat-windows-pty"))
 
 ;; with elpaca
 (use-package eat-windows-pty
-  :ensure (:host github :repo "zawatton21/eat-windows-pty"))
+  :ensure (:host github :repo "zawatton/eat-windows-pty"))
 #+end_src
 
 ** Manual
