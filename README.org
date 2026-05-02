@@ -88,6 +88,67 @@ Clone this repository and add it to your =load-path=:
 
 That's it. =M-x eat= now works on Windows.
 
+* TERM handling
+
+On native Windows, =eat-windows-pty-term= defaults to =unset=.  This
+removes =TERM= from the child process environment, matching cmd.exe,
+PowerShell and Windows Terminal behavior.  This is important for native
+Windows terminal programs such as =fzf.exe=.
+
+If a program needs an explicit terminal type, customize
+=eat-windows-pty-term=:
+
+#+begin_src emacs-lisp
+;; Use Eat's own TERM and TERMINFO.
+(setq eat-windows-pty-term nil)
+
+;; Or force a common terminal type.
+(setq eat-windows-pty-term "xterm-256color")
+#+end_src
+
+* fzf workaround
+
+On native Windows, =fzf.exe= can freeze native Emacs when it uses its
+full-screen console UI through this ConPTY bridge.  =eat-windows-pty=
+does not set fzf options by default, but you can configure them with
+=eat-windows-pty-environment-functions=:
+
+#+begin_src emacs-lisp
+(add-to-list
+ 'eat-windows-pty-environment-functions
+ (lambda ()
+   (let ((options "--height=40% --no-tty-default --no-mouse --no-unicode --no-color")
+         (current (getenv "FZF_DEFAULT_OPTS")))
+     (concat "FZF_DEFAULT_OPTS="
+             (if (and current (> (length current) 0))
+                 (concat current " " options)
+               options)))))
+#+end_src
+
+* Extra environment
+
+Use =eat-windows-pty-extra-environment= for static environment entries:
+
+#+begin_src emacs-lisp
+(setq eat-windows-pty-extra-environment
+      '("MY_TOOL_MODE=terminal" "OLD_VAR"))
+#+end_src
+
+Use =eat-windows-pty-environment-functions= when entries must be
+computed each time a terminal starts:
+
+#+begin_src emacs-lisp
+(add-to-list 'eat-windows-pty-environment-functions
+             (lambda ()
+               (concat "PROJECT_ROOT=" default-directory)))
+#+end_src
+
+* Encoding
+
+ConPTY output is decoded with =eat-windows-pty-coding-system=, which
+defaults to =utf-8-unix=.  This lets Unicode PowerShell prompts and
+timestamps render as characters instead of escaped byte sequences.
+
 * Design
 
 Drop-in override, not a fork. Redefines two functions after eat loads:

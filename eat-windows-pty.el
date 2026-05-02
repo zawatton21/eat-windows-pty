@@ -45,6 +45,87 @@
 
 (require 'eat)
 
+(defgroup eat-windows-pty nil
+  "ConPTY support for Eat on native Windows."
+  :group 'eat)
+
+(defcustom eat-windows-pty-term 'unset
+  "TERM value to expose to programs running under Windows ConPTY.
+
+When `unset', remove TERM from the child process environment.  This is
+the default because native Windows terminal programs commonly expect
+TERM to be unset in cmd.exe, PowerShell and Windows Terminal.
+
+When nil, use Eat's own terminal name and TERMINFO.  When a string, use
+that literal TERM value."
+  :type '(choice (const :tag "Unset TERM" unset)
+                 (const :tag "Use Eat terminal name" nil)
+                 string)
+  :group 'eat-windows-pty)
+
+(defcustom eat-windows-pty-coding-system 'utf-8-unix
+  "Coding system used for the ConPTY byte stream.
+
+ConPTY emits VT sequences and text as bytes.  Decode them as UTF-8 so
+PowerShell prompts and other Unicode output are displayed as characters
+instead of escaped byte sequences."
+  :type 'coding-system
+  :group 'eat-windows-pty)
+
+(defcustom eat-windows-pty-extra-environment nil
+  "Additional process environment entries for Windows ConPTY children.
+
+Each entry should be a string accepted by `process-environment', such as
+\"NAME=value\" to set a variable or \"NAME\" to remove it."
+  :type '(repeat string)
+  :group 'eat-windows-pty)
+
+(defcustom eat-windows-pty-environment-functions nil
+  "Functions that return additional ConPTY environment entries.
+
+Each function is called with no arguments when a new Eat process is
+created.  It may return nil, one environment string, or a list of
+environment strings.  Strings use the same format as
+`process-environment'."
+  :type '(repeat function)
+  :group 'eat-windows-pty)
+
+(defun eat-windows-pty--term-env ()
+  "Return the process environment entry for TERM."
+  (cond
+   ((and (eq system-type 'windows-nt)
+         (eq eat-windows-pty-term 'unset))
+    "TERM")
+   ((and (eq system-type 'windows-nt)
+         (stringp eat-windows-pty-term))
+    (concat "TERM=" eat-windows-pty-term))
+   (t
+    (concat "TERM=" (eat-term-name)))))
+
+(defun eat-windows-pty--terminfo-env ()
+  "Return a TERMINFO environment entry, or nil when not appropriate."
+  (unless (and (eq system-type 'windows-nt)
+               eat-windows-pty-term)
+    (concat "TERMINFO=" eat-term-terminfo-directory)))
+
+(defun eat-windows-pty--environment-from-functions ()
+  "Return environment entries from `eat-windows-pty-environment-functions'."
+  (let (entries)
+    (dolist (function eat-windows-pty-environment-functions (nreverse entries))
+      (let ((result (funcall function)))
+        (cond
+         ((stringp result)
+          (push result entries))
+         ((listp result)
+          (dolist (entry result)
+            (when (stringp entry)
+              (push entry entries)))))))))
+
+(defun eat-windows-pty--extra-env ()
+  "Return all user-configured extra environment entries."
+  (append eat-windows-pty-extra-environment
+          (eat-windows-pty--environment-from-functions)))
+
 (defun eat--build-command (command switches width height)
   "Build the argv vector that `make-process' will spawn for eat.
 
@@ -121,16 +202,22 @@ through conhost.exe on Windows."
       ;; Crank up a new process.
       (let* ((size (eat-term-size eat-terminal))
              (process-environment
-              (nconc
-               (list
-                (concat "TERM=" (eat-term-name))
-                (concat "TERMINFO=" eat-term-terminfo-directory)
-                (concat "INSIDE_EMACS=" eat-term-inside-emacs)
-                (concat "EAT_SHELL_INTEGRATION_DIR="
-                        eat-term-shell-integration-directory))
-               process-environment))
+               (append
+                (delq nil
+                      (list
+                       (eat-windows-pty--term-env)
+                       (eat-windows-pty--terminfo-env)
+                       (concat "INSIDE_EMACS=" eat-term-inside-emacs)
+                       (concat "EAT_SHELL_INTEGRATION_DIR="
+                               eat-term-shell-integration-directory)))
+                (eat-windows-pty--extra-env)
+                process-environment))
              (process-connection-type t)
-             ;; We should suppress conversion of end-of-line format.
+             ;; ConPTY relays terminal bytes over pipes.  Decode text
+             ;; as UTF-8, but keep Emacs from delaying small reads.
+             (process-adaptive-read-buffering nil)
+             (coding-system-for-read eat-windows-pty-coding-system)
+             (coding-system-for-write eat-windows-pty-coding-system)
              (inhibit-eol-conversion t)
              (process
               (make-process
@@ -141,6 +228,8 @@ through conhost.exe on Windows."
                :filter #'eat--filter
                :sentinel #'eat--sentinel
                :file-handler t)))
+        (set-process-coding-system
+         process eat-windows-pty-coding-system eat-windows-pty-coding-system)
         (process-put process 'adjust-window-size-function
                      #'eat--adjust-process-window-size)
         (set-process-query-on-exit-flag
